@@ -17,11 +17,15 @@ public class Event {
     @JacksonXmlProperty(isAttribute = true)
     private final String messageData;
 
-    private Event(Long presentationTime, Long duration, Long id, String messageData) {
+    @JacksonXmlProperty(localName = "Signal", namespace = Signal.SCTE_NAMESPACE)
+    private final Signal signal;
+
+    private Event(Long presentationTime, Long duration, Long id, String messageData, Signal signal) {
         this.presentationTime = presentationTime;
         this.duration = duration;
         this.id = id;
         this.messageData = messageData;
+        this.signal = signal;
     }
 
     @SuppressWarnings("unused")
@@ -30,6 +34,7 @@ public class Event {
         this.duration = null;
         this.id = null;
         this.messageData = null;
+        this.signal = null;
     }
 
     public Long getPresentationTime() {
@@ -48,6 +53,10 @@ public class Event {
         return messageData;
     }
 
+    public Signal getSignal(){
+        return signal;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -56,12 +65,13 @@ public class Event {
         return Objects.equals(presentationTime, event.presentationTime) &&
                 Objects.equals(duration, event.duration) &&
                 Objects.equals(id, event.id) &&
-                Objects.equals(messageData, event.messageData);
+                Objects.equals(messageData, event.messageData) &&
+                Objects.equals(signal, event.signal);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(presentationTime, duration, id, messageData);
+        return Objects.hash(presentationTime, duration, id, messageData, signal);
     }
 
     @Override
@@ -70,7 +80,8 @@ public class Event {
                 "presentationTime=" + presentationTime +
                 ", duration=" + duration +
                 ", id=" + id +
-                ", messageData='" + messageData + '\'' +
+                ", messageData='" + messageData +
+                ", signal=" + signal + '\'' +
                 '}';
     }
 
@@ -79,7 +90,8 @@ public class Event {
                 .withPresentationTime(presentationTime)
                 .withDuration(duration)
                 .withId(id)
-                .withMessageData(messageData);
+                .withMessageData(messageData)
+                .withSignal(signal);
     }
 
     public static Builder builder() {
@@ -91,6 +103,8 @@ public class Event {
         private Long duration;
         private Long id;
         private String messageData;
+
+        private Signal signal;
 
         public Builder withPresentationTime(Long presentationTime) {
             this.presentationTime = presentationTime;
@@ -112,8 +126,14 @@ public class Event {
             return this;
         }
 
-        public Event build() {
-            return new Event(presentationTime, duration, id, messageData);
+        public Builder withSignal(Signal signal) {
+            this.signal = signal;
+            return this;
         }
+
+        public Event build() {
+            return new Event(presentationTime, duration, id, messageData, signal);
+        }
+
     }
 }
